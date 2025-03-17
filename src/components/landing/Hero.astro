@@ -1,0 +1,198 @@
+---
+import LinkBlend from "@components/global/LinkBlend.astro";
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "@i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<section id="hero" class="section home-dark-section hero min-h-screen">
+	<div class="mx-auto flex h-full flex-col py-4 lg:py-10">
+		<div class="relative flex flex-1 flex-col justify-around rounded-lg pb-10 pt-20 lg:rounded-2xl">
+			<div class="flex justify-center">
+				<h1 class="title-container text-center font-display text-5xl font-extrabold uppercase sm:text-7xl md:text-8xl lg:text-9xl">
+					<span class="main-title">{t("hero.title.main")}</span>
+					<span class="rotator relative inline-flex h-20 w-full justify-center md:h-24 lg:h-32">
+						<span class="rotator-item active">{t("hero.title.1")}</span>
+						<span class="rotator-item">{t("hero.title.2")}</span>
+						<span class="rotator-item">{t("hero.title.3")}</span>
+						<span class="rotator-item">{t("hero.title.4")}</span>
+						<span class="rotator-item">{t("hero.title.1")}</span>
+					</span>
+				</h1>
+			</div>
+			<div class="flex flex-col items-center gap-5 text-center lg:gap-10">
+				<p class="subtitle mt-8 max-w-3xl font-mono lg:text-lg">
+					{t("hero.subtitle")}
+				</p>
+				<div class="flex flex-col items-center justify-center gap-3 lg:col-start-1">
+					<div class="squircle-bg rounded-lg bg-zinc-900" data-cursor-hover data-cursor-parallax>
+						<a
+							class="flex h-10 w-full max-w-52 flex-1 items-center justify-center px-4 py-2 text-xl text-slate-200 transition-all hover:text-white sm:w-auto md:font-bold lg:h-10"
+							aria-label="Contact Page"
+							href={translatePath("/contact/")}>
+							{t("contact")}
+						</a>
+					</div>
+
+					<small>
+						{t("or")}
+						<LinkBlend id="go-projects-button" isButton={true}>{t("hero.scroll")}</LinkBlend>
+					</small>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		padding-bottom: 0;
+		position: relative;
+		border-radius: inherit;
+		overflow: hidden;
+	}
+	.hero > div {
+		grid-column: 1 / span 12;
+	}
+
+	/* Hero appearance */
+	.hero h1,
+	.hero h2,
+	.hero h3 {
+		margin: 0;
+	}
+	.hero h1 {
+		margin: 0;
+		position: relative;
+		overflow: hidden;
+	}
+	
+	/* Text reveal animation */
+	.title-container {
+		opacity: 0;
+	}
+	
+	.title-container.visible {
+		opacity: 1;
+	}
+	
+	.main-title {
+		display: block;
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+		transform: translateY(100%);
+		transition: transform 1.5s ease, clip-path 1.5s ease;
+	}
+	
+	.title-container.visible .main-title {
+		clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+		transform: translateY(0);
+	}
+
+	/* Text rotator */
+	.rotator {
+		position: relative;
+		display: inline-flex;
+		justify-content: center;
+	}
+	
+	.rotator-item {
+		position: absolute;
+		opacity: 0;
+		transform: translateY(100%);
+		transition: transform 0.8s ease, opacity 0.8s ease;
+	}
+	
+	.rotator-item.active {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	
+	.rotator-item.exit {
+		opacity: 0;
+		transform: translateY(-100%);
+	}
+	
+	/* Subtitle animation */
+	.subtitle {
+		opacity: 0;
+		transform: translateY(20px);
+		transition: opacity 0.8s ease, transform 0.8s ease;
+	}
+	
+	.subtitle.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+</style>
+
+<script>
+	function initTitleAnimation() {
+		const titleContainer = document.querySelector('.title-container');
+		const subtitle = document.querySelector('.subtitle');
+		
+		// Initial title reveal animation
+		setTimeout(() => {
+			titleContainer.classList.add('visible');
+			
+			// Animate subtitle after title animation
+			setTimeout(() => {
+				subtitle.classList.add('visible');
+			}, 1000);
+			
+			// Start rotator animation after initial reveal
+			setTimeout(() => {
+				initRotatorAnimation();
+			}, 1500);
+		}, 300);
+	}
+	
+	function initRotatorAnimation() {
+		const words = document.querySelectorAll(".rotator-item");
+		let currentIndex = 0;
+		let interval = 2000; // Time each word stays visible
+		
+		// Set initial state
+		words[currentIndex].classList.add('active');
+		
+		// Start rotation
+		setInterval(() => {
+			// Remove active class and add exit class to current word
+			words[currentIndex].classList.remove('active');
+			words[currentIndex].classList.add('exit');
+			
+			// Calculate next index
+			currentIndex = (currentIndex + 1) % words.length;
+			
+			// Add active class to next word
+			words[currentIndex].classList.remove('exit');
+			words[currentIndex].classList.add('active');
+			
+			// Clean up exit class after animation completes
+			setTimeout(() => {
+				document.querySelectorAll('.rotator-item.exit').forEach(item => {
+					item.classList.remove('exit');
+				});
+			}, 800);
+		}, interval);
+	}
+	
+	function initScrollToProjects() {
+		const goProjectsButton = document.getElementById("go-projects-button");
+		goProjectsButton?.addEventListener("click", function () {
+			const projectsSection = document.getElementById("projects");
+			if (projectsSection) {
+				projectsSection.scrollIntoView({ behavior: 'smooth' });
+			}
+		});
+	}
+
+	function init() {
+		initTitleAnimation();
+		initScrollToProjects();
+	}
+
+	document.removeEventListener("DOMContentLoaded", init);
+	document.addEventListener("DOMContentLoaded", init);
+</script>

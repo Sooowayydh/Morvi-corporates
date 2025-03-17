@@ -1,0 +1,143 @@
+---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "@i18n/utils";
+
+const { class: className } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<!-- The structure remains similar but without text animation -->
+<div id="smooth-wrapper" class:list={["section tagline-section relative bg-zinc-900 text-white", className]}>
+	<div class="tagline-arrows">
+		<svg
+			stroke-linecap="round"
+			class="h-[15rem] w-[15rem] rotate-45 md:w-[20rem] md:rotate-0 lg:w-[25rem]"
+			stroke-linejoin="round"
+			viewBox="0 0 550 330">
+			<path
+				id="tagline-arrow-path"
+				fill="none"
+				stroke="#fff"
+				stroke-width="10"
+				d="M8.5,7.8C46.3,67,121.7,185.5,265.5,185.9c42.8,0.1,120.5-55.9-25.2-120.3
+	C79-5.8,177.6,164.1,222.3,207.7c59.1,49.9,83.8,62.1,162.6,96.8">
+			</path>
+			<path class="arrow opacity-0" id="tagline-arrow" stroke="white" stroke-width="12" d="M465.7 172.9l47.1 6-29.8 33.3-17.3-39.3z"></path>
+		</svg>
+	</div>
+	<div class="text col-span-12 flex justify-center font-light">
+		<p id="services-tagline" class="max-w-5xl text-center text-4xl md:text-5xl lg:text-7xl">
+			{t("tagline")}
+		</p>
+	</div>
+</div>
+
+<style>
+	/* For SVG path animation */
+	#tagline-arrow-path {
+		stroke-dasharray: 1000;
+		stroke-dashoffset: 1000;
+	}
+</style>
+
+<script>
+	import { gsap } from "gsap";
+	import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	function init() {
+		// 1. Path drawing animation - using stroke-dasharray/dashoffset instead of DrawSVG
+		const linePath = document.querySelector("#tagline-arrow-path");
+		const pathLength = linePath.getTotalLength();
+		
+		// Set up the initial state
+		linePath.style.strokeDasharray = pathLength;
+		linePath.style.strokeDashoffset = pathLength;
+
+		// Create the path animation
+		gsap.timeline({
+			scrollTrigger: {
+				trigger: ".tagline-arrows",
+				start: "center bottom",
+				end: "center center",
+				markers: false,
+				scrub: 1,
+			}
+		})
+		.to(linePath, {
+			strokeDashoffset: 0,
+			ease: "none"
+		})
+		.to("#tagline-arrow", {
+			opacity: 1,
+			duration: 0.1
+		}, "<");
+
+		// 2. Arrow animation - replacing MotionPath with custom animation
+		animateAlongPath("#tagline-arrow-path", "#tagline-arrow");
+	}
+
+	// Custom function to animate element along a path
+	function animateAlongPath(pathSelector, elementSelector) {
+		const path = document.querySelector(pathSelector);
+		const element = document.querySelector(elementSelector);
+		const pathLength = path.getTotalLength();
+		
+		// Calculate positions for the arrow along the path
+		const numPoints = 100;
+		const points = [];
+		
+		for (let i = 0; i <= numPoints; i++) {
+			const point = path.getPointAtLength(pathLength * (i / numPoints));
+			points.push({
+				x: point.x,
+				y: point.y
+			});
+		}
+		
+		// Create a timeline for the arrow movement
+		const tl = gsap.timeline({
+			scrollTrigger: {
+				trigger: ".tagline-arrows",
+				start: "center bottom",
+				end: "center center",
+				markers: false,
+				scrub: 1,
+			}
+		});
+		
+		// Position the arrow at the start
+		gsap.set(element, {
+			transformOrigin: "center",
+			x: points[0].x,
+			y: points[0].y
+		});
+		
+		// Animate between points
+		points.forEach((point, index) => {
+			// Calculate rotation based on the direction to the next point
+			let rotation = 0;
+			if (index < points.length - 1) {
+				const nextPoint = points[index + 1];
+				rotation = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI) + 30;
+			}
+			
+			tl.to(element, {
+				x: point.x,
+				y: point.y,
+				rotation: rotation,
+				duration: 0.01,
+				ease: "none"
+			});
+		});
+		
+		return tl;
+	}
+
+	// Use astro:page-load if using Astro 3.0+
+	document.removeEventListener("DOMContentLoaded", init);
+	document.addEventListener("DOMContentLoaded", init);
+</script>

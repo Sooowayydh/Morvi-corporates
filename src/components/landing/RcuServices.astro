@@ -1,0 +1,44 @@
+---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "@i18n/utils";
+
+const { class: className } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<div id="smooth-wrapper" class:list={["section tagline-section relative bg-zinc-900 text-white", className]}>
+  <div class="text col-span-12 flex justify-center font-light py-8">
+    <div class="max-w-5xl text-center">
+      <h1 id="services-title" class="text-4xl md:text-5xl lg:text-7xl font-bold">
+        {t("rcu_fcu.title")}
+      </h1>
+      <p id="services-content" class="mt-4 text-2xl md:text-3xl lg:text-3xl">
+        {t("rcu_fcu.content")}
+      </p>
+      <ul class="mt-6 list-disc text-left mx-auto max-w-2xl text-2xl">
+        <li class="mb-2">{t("rcu_fcu.field_investigation")}</li>
+        <li class="mb-2">{t("rcu_fcu.screening")}</li>
+        <li class="mb-2">{t("rcu_fcu.document_verification")}</li>
+        <li class="mb-2">{t("rcu_fcu.tele_verification")}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Apply the same gradient text effect as used in Tagline */
+  .text > p > :global(div) {
+    background: linear-gradient(to right, rgb(255, 255, 255) 50%, rgb(37, 37, 37) 50%);
+    background-size: 200% 100%;
+    background-position-x: 100%;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    line-height: 1.2;
+  }
+</style>
+
+<script>
+  // Arrow animation code removed; no GSAP animations are required.
+</script>

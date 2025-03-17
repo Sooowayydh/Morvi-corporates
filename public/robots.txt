@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://morvi.co/sitemap-index.xml

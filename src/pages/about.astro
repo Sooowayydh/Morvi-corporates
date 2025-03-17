@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { AstroSeoProps } from "@astrolib/seo";
+import Title from "@/components/global/Title.astro";
+const seo: AstroSeoProps = {
+	title: "Contact Morvi Corporates: Get in Touch for Reliable Verification Services",
+	description:
+		"Reach out to Morvi Corporates for dependable verification services and expert support. Connect with us to discuss your requirements and explore our comprehensive solutions.",
+	canonical: "https://morvicorporates.com/it/contact/",
+};
+
+
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "@i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<BaseLayout seo={seo}>
+    <!-- <section class="isolate px-6 py-24 sm:py-32 lg:px-8">
+        <div class="absolute inset-x-0 top-[-10rem] transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
+            <div class="gradient-element"></div>
+        </div>
+        <div class="mx-auto">
+            <Title class="pb-10 pt-20 uppercase" title={t("about.title")} subtitle={t("about.subtitle")} />
+            
+        </div>
+    </section> -->
+    <section class="isolate px-6 py-24 sm:py-32 lg:px-8">
+        <div class="absolute inset-x-0 top-[-10rem] transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
+          <div class="gradient-element"></div>
+        </div>
+        <div class="mx-auto max-w-3xl">
+          <!-- Page Title & Subtitle -->
+          <Title class="pb-10 pt-20 uppercase" title={t("about.title")} subtitle={t("about.subtitle")} />
+      
+          <!-- Profile Section -->
+          <p class="mt-8 text-lg leading-relaxed">{t("about.profile")}</p>
+      
+          <!-- Partners Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("partners.heading")}</h2>
+            <div class="space-y-6">
+              {t("partners.content").map((partner, index) => (
+                <div key={index} class="p-4 border border-white rounded">
+                  <h3 class="text-xl font-semibold">{partner.name}</h3>
+                  <p class="text-lg"><strong>Qualification:</strong> {partner.qualification}</p>
+                  <p class="text-lg"><strong>Experience:</strong> {partner.experience}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+      
+          <!-- Core Values Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("values.heading")}</h2>
+            <ul class="list-disc pl-6 space-y-2 text-lg">
+              {t("values.content").map((value, index) => (
+                <li key={index}>{value}</li>
+              ))}
+            </ul>
+          </section>
+      
+          <!-- Mission Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("mission.heading")}</h2>
+            <p class="text-lg">{t("mission.content")}</p>
+          </section>
+      
+          <!-- Vision Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("vision.heading")}</h2>
+            <p class="text-lg">{t("vision.content")}</p>
+          </section>
+      
+          <!-- Goal Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("goal.heading")}</h2>
+            <p class="text-lg">{t("goal.content")}</p>
+          </section>
+      
+          <!-- Technology Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("technology.heading")}</h2>
+            <p class="text-lg">{t("technology.content")}</p>
+          </section>
+      
+          <!-- Coverage Section -->
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold mb-4">{t("coverage.heading")}</h2>
+            <p class="text-lg">{t("coverage.content")}</p>
+          </section>
+        </div>
+      </section>
+      
+</BaseLayout>
